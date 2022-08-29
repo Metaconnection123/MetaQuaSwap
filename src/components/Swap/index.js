@@ -65,8 +65,8 @@ const SwapPage = () => {
             setMetaMaskDisabled(false);
             connectAccount();
             initWeb3();
-            setContractAddress('0xc402b31f5a26669c41576711ce8f20fd86541cda');
-            const contractabi = require('../../abi/TestToken10.json')
+            setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
+            const contractabi = require('../../abi/TestToken11.json')
             setContractAbi(contractabi)
 
             window.ethereum.on('accountsChanged', () => {
