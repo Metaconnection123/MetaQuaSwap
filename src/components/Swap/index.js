@@ -48,17 +48,24 @@ const SwapPage = () => {
     const [isOpenedTab1, setOpenedTab1] = useState(true);
     const [isOpenedTab2, setOpenedTab2] = useState(false);
 
-    const [inputAmount, setInputAmount] = useState(0);
-    const [outputAmount, setOutputAmount] = useState(0);
+    const [calcInputEther, setCalcInputEther] = useState(0);
+    const [calcInputToken, setCalcInputToken] = useState(0);
 
-    const [swapUnit, setSwapUnit] = useState(0);
+    const [viewInputToken, setViewInputToken] = useState(0);
+    const [viewOutputEther, setViewOutputEther] = useState(0);
+
+    const [viewInputEther, setViewInputEther] = useState(0);
+    const [viewOutputToken, setViewOutputToken] = useState(0);
+
+    const [viewSwapUnit, setViewSwapUnit] = useState(0);
+    const [calcSwapUnitWei, setCalcSwapUnitWei] = useState(0);
+
     const [swapBtnDisabled, setSwapBtnDisabled] = useState(true);
     const [metaMaskDisabled, setMetaMaskDisabled] = useState(true);
 
     const [isLackBalance, setIsLackBalance] = useState(false);
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
 
     useEffect(() => {
         if (window.ethereum) {
@@ -99,35 +106,54 @@ const SwapPage = () => {
         setWeb3(webThree);
     }
 
-    const changeAmount = (e) => {
-        setInputAmount(Number(e.target.value));
-    }
 
     useEffect(() => {
-        if (isOpenedTab1 && inputAmount) {
-            let inputAmountToWei = Number(web3.utils.toWei(inputAmount.toString()));
-            let swapUnitToWei = Number(web3.utils.toWei(swapUnit.toString())); //toString()을 사용한다고 해서 string으로 타입이 변하진 않음
-            if (inputAmountToWei % swapUnitToWei === 0) {
-                let outputAmount = inputAmountToWei / swapUnitToWei;
-                setOutputAmount(outputAmount);
-                setSwapBtnDisabled(false);
-            } else {
-                setSwapBtnDisabled(true);
+        if (isOpenedTab1 && calcInputEther) {
+            if (web3) {
+                if (Number(calcInputEther) % Number(calcSwapUnitWei) === 0) {
+                    let outputAmount = Number(calcInputEther) / Number(calcSwapUnitWei);
+                    setViewOutputToken(outputAmount)
+                    setViewInputEther(web3.utils.fromWei(calcInputEther.toString()));
+                    setSwapBtnDisabled(false);
+                } 
             }
-
-        } else if (isOpenedTab2 && inputAmount) {
-            let amount = Number(inputAmount) * Number(swapUnit.toString());
-            setOutputAmount(amount.toFixed(4));
-            setSwapBtnDisabled(false);
         }
-    }, [inputAmount])
+
+        if (calcInputEther === 0) {
+            setViewInputEther(0);
+            setViewOutputToken(0);
+            setSwapBtnDisabled(true);
+        }
+ 
+    }, [calcInputEther])
+
+
+    useEffect(() => {
+        if (isOpenedTab2 && calcInputToken) {
+            if (web3) {
+                let amount = Number(calcInputToken) * Number(calcSwapUnitWei);
+                setViewInputToken(calcInputToken)
+                setViewOutputEther(web3.utils.fromWei(amount.toString()))
+                setSwapBtnDisabled(false);
+            }
+        }
+
+        if (calcInputToken === 0) {
+            setViewInputToken(0);
+            setViewOutputEther(0);
+            setSwapBtnDisabled(true);
+        }
+    }, [calcInputToken])
+
 
 
     const getThousandWorthOfEther = async () => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
-        let balance = await contract.methods.getThousandWorthOfEther().call();
-        let unit = web3.utils.fromWei(balance.toString())
-        setSwapUnit(Number(unit));
+        let calcSwapUnitWei = await contract.methods.getThousandWorthOfEther().call();
+        setCalcSwapUnitWei(calcSwapUnitWei);
+
+        let swapUnit = web3.utils.fromWei(calcSwapUnitWei.toString())
+        setViewSwapUnit(swapUnit);
     }
 
 
@@ -136,23 +162,24 @@ const SwapPage = () => {
             return;
         }
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
-        let token = await contract.methods.balanceOf(address).call();
-        let result = web3.utils.fromWei(token.toString())
-        setTokenAmount(result);
+        let tokenWei = await contract.methods.balanceOf(address).call();
+        let token = web3.utils.fromWei(tokenWei.toString());
+        setTokenAmount(token);
 
-        let ether = web3.utils.fromWei(await web3.eth.getBalance(address));
+        let etherWei = await web3.eth.getBalance(address)
+        let ether = web3.utils.fromWei(etherWei);
         setEtherAmount(ether);
     }
 
 
     const assetValidation = () => {
         if (isOpenedTab1) {
-            if (Number(etherAmount) < inputAmount) {
+            if (Number(etherAmount) < Number(viewInputEther)) {
                 setIsLackBalance(true);
                 return;
             }
         } else {
-            if (Number(tokenAmount) < inputAmount) {
+            if (Number(tokenAmount) < Number(viewInputToken)) {
                 setIsLackBalance(true);
                 return;
             }
@@ -292,33 +319,28 @@ const SwapPage = () => {
     const upBtnClick = (number) => {
         let amount = 0;
         if (isOpenedTab1) {
-            amount = Number(inputAmount) + (Number(swapUnit) * number);
-            setInputAmount(Number(amount.toFixed(4)));
+            amount = Number(calcInputEther) + (Number(calcSwapUnitWei) * number);
+            setCalcInputEther(amount.toString());
         } else {
-            amount = inputAmount + number;
-            setInputAmount(amount);
+            amount = Number(calcInputToken) + number;
+            setCalcInputToken(amount.toString());
         }
     }
 
     const downBtnClick = (number) => {
         let amount = 0;
         if (isOpenedTab1) {
-            amount = Number(inputAmount) - (Number(swapUnit) * number);
-        } else {
-            amount = inputAmount - number;
-        }
-
-        if (amount <= 0) {
-            amount = 0;
-            setInputAmount(amount);
-            setOutputAmount(0);
-            setSwapBtnDisabled(true);
-        } else {
-            if (isOpenedTab1) {
-                setInputAmount(Number(amount.toFixed(4)));
-            } else {
-                setInputAmount(amount);
+            amount = Number(calcInputEther) - (Number(calcSwapUnitWei) * number);
+            if (amount <= 0) {
+                amount = 0;
             }
+            setCalcInputEther(amount);
+        } else {
+            amount = Number(calcInputToken) - number;
+            if (amount <= 0) {
+                amount = 0;
+            } 
+            setCalcInputToken(amount);
         }
     }
 
@@ -330,13 +352,19 @@ const SwapPage = () => {
             setOpenedTab1(false);
             setOpenedTab2(true);
         }
-        setInputAmount(0);
-        setOutputAmount(0);
+        setCalcInputEther(0);
+        setCalcInputToken(0);
+        setViewInputEther(0);
+        setViewInputToken(0);
         setSwapBtnDisabled(true);
     }
     const inputAmountClear = () => {
-        setInputAmount(0);
-        setOutputAmount(0);
+        setCalcInputEther(0);
+        setCalcInputToken(0);
+        setViewInputEther(0);
+        setViewInputToken(0);
+        setViewOutputEther(0);
+        setViewOutputToken(0)
         setSwapBtnDisabled(true);
     }
 
@@ -346,9 +374,9 @@ const SwapPage = () => {
 
     const convertAmount = () => {
         if (isOpenedTab1) {
-            convertToken(inputAmount);
+            convertToken(viewInputEther);
         } else {
-            convertEther(inputAmount);
+            convertEther(viewInputToken);
         }
         setSwapAmtChkModal(false);
     }
@@ -362,7 +390,7 @@ const SwapPage = () => {
             {<MetaMaskInstall visible={metaMaskDisabled}>MetaMask Not Install.</MetaMaskInstall>}
             {isLackBalance && <InsufficientCash func={confirmLackBalance} asset={isOpenedTab1 ? 'ETH' : 'BWE'}></InsufficientCash>}
             {isSwapAmtChkModal && <CheckAmount
-                inputAmount={inputAmount}
+                inputAmount={isOpenedTab1 ? viewInputEther : viewInputToken}
                 asset={isOpenedTab1 ? 'ETH' : 'BWE'}
                 func1={convertAmount}
                 func2={swapNoClick}></CheckAmount>}
@@ -398,11 +426,12 @@ const SwapPage = () => {
                 </MyAssetsLayout>
                 <SwapRateText>Swap Rate</SwapRateText>
                 <SwapRateLayout>
-                    1 BWE == {swapUnit} ETH
+                    1 BWE == {viewSwapUnit} ETH
                 </SwapRateLayout>
                 <InputText>Input ({isOpenedTab1 ? "ETH" : "BWE"})</InputText>
                 <InputAmountLayout>
-                    <InputAmount onChange={changeAmount}>{inputAmount}</InputAmount>
+                    {/* <InputAmount onChange={changeAmount}>{viewInputAmount}</InputAmount> */}
+                    <InputAmount>{isOpenedTab1 ? viewInputEther : viewInputToken}</InputAmount>
                     <ClearBtn onClick={inputAmountClear}>Clear</ClearBtn>
                     <AmountBtnLayout>
                         <UpAmountBtn onClick={() => upBtnClick(1)}>+1</UpAmountBtn>
@@ -417,7 +446,7 @@ const SwapPage = () => {
 
                 <OutputText>Output ({isOpenedTab1 ? "BWE" : "ETH"})</OutputText>
                 <OutputAmountLayout>
-                    <OutputAmount>{outputAmount}</OutputAmount>
+                    <OutputAmount>{isOpenedTab1 ? viewOutputToken : viewOutputEther}</OutputAmount>
                     <SwapBtn disabled={swapBtnDisabled} onClick={assetValidation}>Swap</SwapBtn>
                 </OutputAmountLayout>
 
