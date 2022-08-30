@@ -70,6 +70,7 @@ const SwapPage = () => {
     useEffect(() => {
         if (window.ethereum) {
             setMetaMaskDisabled(false);
+            covertRinkeby();
             connectAccount();
             initWeb3();
             setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
@@ -146,6 +147,25 @@ const SwapPage = () => {
     }, [calcInputToken])
 
 
+    useEffect(() => {
+        if (account) {
+            getAmount(account)
+            getThousandWorthOfEther();
+        }
+    }, [chainId])
+
+
+    const covertRinkeby = async () => {
+        try {
+            const cid = await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: "0x4" }],
+            });
+            setChainId(parseInt(cid, 16).toString());
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const getThousandWorthOfEther = async () => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
