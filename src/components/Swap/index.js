@@ -71,10 +71,14 @@ const SwapPage = () => {
         if (window.ethereum) {
             setMetaMaskDisabled(false);
             covertRinkeby();
+            // convertMumbai();
             connectAccount();
             initWeb3();
-            setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
-            const contractabi = require('../../abi/TestToken11.json')
+            // setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
+            // const contractabi = require('../../abi/TestToken11.json')
+
+            setContractAddress('0x7af14917f768bba53a2f38439e60ee308fe5c7f6');
+            const contractabi = require('../../abi/TestToken12.json')
             setContractAbi(contractabi)
 
             window.ethereum.on('accountsChanged', () => {
@@ -91,7 +95,7 @@ const SwapPage = () => {
     useEffect(() => {
         if (account) {
             getAmount(account)
-            getThousandWorthOfEther();
+            getSwapPrice();
         }
     }, [account, etherAmount, tokenAmount])
 
@@ -150,7 +154,7 @@ const SwapPage = () => {
     useEffect(() => {
         if (account) {
             getAmount(account)
-            getThousandWorthOfEther();
+            getSwapPrice();
         }
     }, [chainId])
 
@@ -167,9 +171,20 @@ const SwapPage = () => {
         }
     }
 
-    const getThousandWorthOfEther = async () => {
+    // const convertMumbai = async () => {
+    //     try {
+    //         await window.ethereum.request({
+    //             method: "wallet_switchEthereumChain",
+    //             params: [{ chainId: "0x13881" }],
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
+    const getSwapPrice = async () => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
-        let calcSwapUnitWei = await contract.methods.getThousandWorthOfEther().call();
+        let calcSwapUnitWei = await contract.methods.getSwapPrice().call();
         setCalcSwapUnitWei(calcSwapUnitWei);
 
         let swapUnit = web3.utils.fromWei(calcSwapUnitWei.toString())
