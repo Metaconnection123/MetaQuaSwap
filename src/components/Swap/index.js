@@ -4,6 +4,7 @@ import MetaMaskInstall from '../Modal/MetaMaskInstall';
 import InsufficientCash from '../Modal/InsufficientCash';
 import CheckAmount from '../Modal/CheckAmount';
 import Loading from '../Loading/Loading';
+import axios from 'axios';
 
 import {
     SwapPageBody,
@@ -272,6 +273,25 @@ const SwapPage = () => {
             whenTransactionMined(txHash, (receipt) => {
                 if (receipt.status) {
                     console.log("receipt : ", receipt);
+                    // axios.post('http://localhost:8080/api/goods/addSwapLog', {
+                    //     sendAddress :account,
+                    //     receiveAddress :contractAddress,
+                    //     sendGoods:'BToken',
+                    //     sendAmount: viewInputToken,
+                    //     receiveGoods:'Ethereum',
+                    //     receiveAmount: viewOutputEther,
+                    //     eventPoint: 1,
+                    // }, {
+                    //     headers: {
+                    //         'Content-type': 'application/json',
+                    //         'Accept': 'application/json'
+                    //         }
+                    //     }
+                    // )
+                    // .then((response)=>{console.log(response.data);})
+                    // .catch((response)=>{console.log('Error!')});
+                    
+
                     setEtherAmount(0);
                     setTokenAmount(0);
                     inputAmountClear();
@@ -337,6 +357,24 @@ const SwapPage = () => {
             whenTransactionMined(txHash, (receipt) => {
                 if (receipt.status) {
                     console.log("receipt : ", receipt);
+                    // axios.post('http://localhost:8080/api/goods/addSwapLog', {
+                    //     sendAddress :account,
+                    //     receiveAddress :contractAddress,
+                    //     sendGoods:'Ethereum',
+                    //     sendAmount: viewInputEther,
+                    //     receiveGoods:'BToken',
+                    //     receiveAmount: viewOutputToken,
+                    //     eventPoint: 1,
+                    // }, {
+                    //     headers: {
+                    //         'Content-type': 'application/json',
+                    //         'Accept': 'application/json'
+                    //         }
+                    //     }
+                    // )
+                    // .then((response)=>{console.log(response.data);})
+                    // .catch((response)=>{console.log('Error!')});
+
                     setEtherAmount(0);
                     setTokenAmount(0);
                     inputAmountClear();
