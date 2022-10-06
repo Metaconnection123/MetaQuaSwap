@@ -71,15 +71,16 @@ const SwapPage = () => {
     useEffect(() => {
         if (window.ethereum) {
             setMetaMaskDisabled(false);
-            covertRinkeby();
+            covertGoerli();
             // convertMumbai();
             connectAccount();
             initWeb3();
             // setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
             // const contractabi = require('../../abi/TestToken11.json')
 
-            setContractAddress('0x7af14917f768bba53a2f38439e60ee308fe5c7f6');
-            const contractabi = require('../../abi/TestToken12.json')
+            // setContractAddress('0x7af14917f768bba53a2f38439e60ee308fe5c7f6');
+            setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
+            const contractabi = require('../../abi/TestToken13.json')
             setContractAbi(contractabi)
 
             window.ethereum.on('accountsChanged', () => {
@@ -160,11 +161,11 @@ const SwapPage = () => {
     }, [chainId])
 
 
-    const covertRinkeby = async () => {
+    const covertGoerli = async () => {
         try {
             const cid = await window.ethereum.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0x4" }],
+                params: [{ chainId: "0x5" }],
             });
             setChainId(parseInt(cid, 16).toString());
         } catch (error) {
@@ -490,11 +491,11 @@ const SwapPage = () => {
                 <MyAssetsLayout>
                     <EtherAmountLayout>
                         <AmountCategoryText>Ethereum</AmountCategoryText>
-                        <AmountText>{etherAmount} ETH</AmountText>
+                        <AmountText>{Number(etherAmount).toFixed(8)} ETH</AmountText>
                     </EtherAmountLayout>
                     <TokenAmountLayout>
                         <AmountCategoryText>ERC-20</AmountCategoryText>
-                        <AmountText>{tokenAmount} BWE</AmountText>
+                        <AmountText>{Number(tokenAmount).toFixed(8)} BWE</AmountText>
                     </TokenAmountLayout>
                 </MyAssetsLayout>
                 <SwapRateText>Swap Rate</SwapRateText>
