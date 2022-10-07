@@ -98,6 +98,8 @@ const SwapPage = () => {
         if (account) {
             getAmount(account)
             getSwapPrice();
+            inputAmountClear();
+            setSwapBtnDisabled(true);
         }
     }, [account, etherAmount, tokenAmount])
 
