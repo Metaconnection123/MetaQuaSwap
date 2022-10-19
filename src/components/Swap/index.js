@@ -67,8 +67,11 @@ const SwapPage = () => {
     const [isLackBalance, setIsLackBalance] = useState(false);
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [userAgent, setUserAgent] = useState();
     useEffect(() => {
+      
+    
+        setUserAgent(window.navigator.userAgent)
         if (window.ethereum) {
             setMetaMaskDisabled(false);
             covertGoerli();
@@ -100,6 +103,7 @@ const SwapPage = () => {
             getSwapPrice();
             inputAmountClear();
             setSwapBtnDisabled(true);
+            console.log("userAgent : ", userAgent);
         }
     }, [account, etherAmount, tokenAmount])
 
@@ -171,6 +175,7 @@ const SwapPage = () => {
             });
             setChainId(parseInt(cid, 16).toString());
         } catch (error) {
+            console.log("#111111");
             console.log(error);
         }
     }
@@ -310,6 +315,13 @@ const SwapPage = () => {
     }
 
     const convertToken = async (etherAmount) => {
+        if (userAgent.match(".*androidUrl.*")) {
+            let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+            window.location.href = metaMaskStoreUrl;
+            return;
+        }
+
+
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
         let blockNumber = await web3.eth.getBlockNumber();
@@ -388,6 +400,7 @@ const SwapPage = () => {
 
             });
         } catch (error) {
+            console.log("#3333")
             console.log(error);
         }
     }
