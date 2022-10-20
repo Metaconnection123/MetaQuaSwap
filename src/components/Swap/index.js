@@ -89,13 +89,15 @@ const SwapPage = () => {
             window.ethereum.on('accountsChanged', () => {
                 setAccount(window.ethereum.selectedAddress)
             })
+            window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
         } else {
             setMetaMaskDisabled(true);
             if (userAgent.match(".*androidUrl.*")) {
                 let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-                window.location.href = metaMaskStoreUrl;
+                window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
                 return;
             }
+            window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
         }
 
         return () => {
