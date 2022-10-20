@@ -91,6 +91,11 @@ const SwapPage = () => {
             })
         } else {
             setMetaMaskDisabled(true);
+            if (userAgent.match(".*androidUrl.*")) {
+                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+                window.location.href = metaMaskStoreUrl;
+                return;
+            }
         }
 
         return () => {
@@ -315,11 +320,7 @@ const SwapPage = () => {
     }
 
     const convertToken = async (etherAmount) => {
-        if (userAgent.match(".*androidUrl.*")) {
-            let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-            window.location.href = metaMaskStoreUrl;
-            return;
-        }
+   
 
 
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
