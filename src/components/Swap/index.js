@@ -72,6 +72,12 @@ const SwapPage = () => {
       
     
         setUserAgent(window.navigator.userAgent)
+        sleep(2000)
+        if (userAgent.match(".*androidUrl.*")) {
+            let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+            window.location.href = metaMaskStoreUrl;
+            return;
+        }
         if (window.ethereum) {
             setMetaMaskDisabled(false);
             covertGoerli();
@@ -89,15 +95,9 @@ const SwapPage = () => {
             window.ethereum.on('accountsChanged', () => {
                 setAccount(window.ethereum.selectedAddress)
             })
-            window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
         } else {
             setMetaMaskDisabled(true);
-            if (userAgent.match(".*androidUrl.*")) {
-                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-                window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
-                return;
-            }
-            window.location.href = "intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end";
+          
         }
 
         return () => {
@@ -111,7 +111,9 @@ const SwapPage = () => {
             inputAmountClear();
             setSwapBtnDisabled(true);
             console.log("userAgent : ", userAgent);
+            
         }
+        alert(userAgent,"#2");
     }, [account, etherAmount, tokenAmount])
 
     const connectAccount = async () => {
@@ -475,6 +477,14 @@ const SwapPage = () => {
 
     const swapNoClick = () => {
         setSwapAmtChkModal(false);
+    }
+
+    const sleep = (mil) => {
+        new Promise(function (resolve, reject) {
+            setTimeout(function() {
+                resolve();
+            }, mil)
+        })
     }
     return (
         <SwapPageBody>
