@@ -68,16 +68,21 @@ const SwapPage = () => {
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [userAgent, setUserAgent] = useState();
-    useEffect(() => {
+    useEffect(async () => {
       
-    
         setUserAgent(window.navigator.userAgent)
-        sleep(2000)
-        if (userAgent.match(".*androidUrl.*")) {
-            let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-            window.location.href = metaMaskStoreUrl;
-            return;
+    
+        async function sleepTest() {
+            await sleep(2000);
+            alert(userAgent);
+            if (userAgent.match(".*androidUrl.*")) {
+                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+                window.location.href = metaMaskStoreUrl;
+                return;
+            }
         }
+        sleepTest();
+
         if (window.ethereum) {
             setMetaMaskDisabled(false);
             covertGoerli();
