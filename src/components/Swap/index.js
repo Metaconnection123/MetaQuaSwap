@@ -89,6 +89,7 @@ const SwapPage = () => {
 
             let indexOf = userAgent.indexOf('Android');
             if (indexOf !== -1) {
+                alert("#11111")
                 setIsMobile(true);
                 setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }))
             }
