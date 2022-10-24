@@ -125,7 +125,7 @@ const SwapPage = () => {
         if (connector && isMobile) {
             // Check if connection is already established
             if (!connector.connected) {
-                
+                alert("!connector.connected");
                 // create new session
                 connector.createSession().then(() => {
                     alert("connector.createSession");
