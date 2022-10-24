@@ -70,10 +70,12 @@ const SwapPage = () => {
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [userAgent, setUserAgent] = useState();
+    const [isMobile, setIsMobile] = useState(false);
+    const [connector, setConnector] = useState();
     useEffect(async () => {
-      
+
         setUserAgent(window.navigator.userAgent)
-    
+
         // async function sleepTest() {
         //     await sleep(2000);
         //     alert(userAgent);
@@ -104,7 +106,7 @@ const SwapPage = () => {
             })
         } else {
             setMetaMaskDisabled(true);
-          
+
         }
 
         return () => {
@@ -121,12 +123,60 @@ const SwapPage = () => {
             // }
 
             let indexOf = userAgent.indexOf('Android');
-
             if (indexOf !== -1) {
-                alert(indexOf);
-            } 
+                setIsMobile(true);
+                setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }))
+            }
         }
     }, [userAgent])
+
+    useEffect(() => {
+        if (connector) {
+            // Check if connection is already established
+            // if (!connector.connected) {
+            //     // create new session
+            //     connector.createSession().then(() => {
+            //         // get uri for QR Code modal
+            //         const uri = connector.uri;
+            //         // display QR Code modal
+            //         WalletConnectQRCodeModal.open(uri, () => {
+            //             console.log("QR Code Modal closed");
+            //         });
+            //     });
+            // }
+
+            // Subscribe to connection events
+            connector.on("connect", (error, payload) => {
+                alert("connect!!!!");
+                if (error) {
+                    alert(error);
+                    throw error;
+                }
+
+                // Close QR Code Modal
+                // WalletConnectQRCodeModal.close();
+
+                // Get provided accounts and chainId
+                const { accounts, chainId } = payload.params[0];
+                alert(accounts);
+                alert(chainId);
+            });
+
+            connector.on("session_update", (error, payload) => {
+                if (error) {
+                    throw error;
+                }
+
+                // Get updated accounts and chainId
+                const { accounts, chainId } = payload.params[0];
+            });
+
+            connector.on("disconnect", (error, payload) => {
+                if (error) {
+                    throw error;
+                }
+            }
+    })
     useEffect(() => {
         if (account) {
             getAmount(account)
@@ -157,7 +207,7 @@ const SwapPage = () => {
                     setViewOutputToken(outputAmount)
                     setViewInputEther(web3.utils.fromWei(calcInputEther.toString()));
                     setSwapBtnDisabled(false);
-                } 
+                }
             }
         }
 
@@ -166,7 +216,7 @@ const SwapPage = () => {
             setViewOutputToken(0);
             setSwapBtnDisabled(true);
         }
- 
+
     }, [calcInputEther])
 
 
@@ -327,7 +377,7 @@ const SwapPage = () => {
                     // )
                     // .then((response)=>{console.log(response.data);})
                     // .catch((response)=>{console.log('Error!')});
-                    
+
 
                     setEtherAmount(0);
                     setTokenAmount(0);
@@ -450,7 +500,7 @@ const SwapPage = () => {
             amount = Number(calcInputToken) - number;
             if (amount <= 0) {
                 amount = 0;
-            } 
+            }
             setCalcInputToken(amount);
         }
     }
@@ -498,59 +548,59 @@ const SwapPage = () => {
 
     const sleep = (mil) => {
         new Promise(function (resolve, reject) {
-            setTimeout(function() {
+            setTimeout(function () {
                 resolve();
             }, mil)
         })
     }
 
-//     // Create a connector
-// const connector = new WalletConnect({
-//     bridge: "https://bridge.walletconnect.org" // Required
-//   });
-  
-//   // Check if connection is already established
-//   if (!connector.connected) {
-//     // create new session
-//     connector.createSession().then(() => {
-//       // get uri for QR Code modal
-//       const uri = connector.uri;
-//       // display QR Code modal
-//       WalletConnectQRCodeModal.open(uri, () => {
-//         console.log("QR Code Modal closed");
-//       });
-//     });
-//   }
-  
-//   // Subscribe to connection events
-//   connector.on("connect", (error, payload) => {
-//     if (error) {
-//       throw error;
-//     }
-  
-//     // Close QR Code Modal
-//     WalletConnectQRCodeModal.close();
-  
-//     // Get provided accounts and chainId
-//     const { accounts, chainId } = payload.params[0];
-//   });
-  
-//   connector.on("session_update", (error, payload) => {
-//     if (error) {
-//       throw error;
-//     }
-  
-//     // Get updated accounts and chainId
-//     const { accounts, chainId } = payload.params[0];
-//   });
-  
-//   connector.on("disconnect", (error, payload) => {
-//     if (error) {
-//       throw error;
-//     }
-  
-//     // Delete connector
-//   });
+    //    // Create a connector
+    // const connector = new WalletConnect({
+    //     bridge: "https://bridge.walletconnect.org" // Required
+    //   });
+
+    //   // Check if connection is already established
+    //   if (!connector.connected) {
+    //     // create new session
+    //     connector.createSession().then(() => {
+    //       // get uri for QR Code modal
+    //       const uri = connector.uri;
+    //       // display QR Code modal
+    //       WalletConnectQRCodeModal.open(uri, () => {
+    //         console.log("QR Code Modal closed");
+    //       });
+    //     });
+    //   }
+
+    //   // Subscribe to connection events
+    //   connector.on("connect", (error, payload) => {
+    //     if (error) {
+    //       throw error;
+    //     }
+
+    //     // Close QR Code Modal
+    //     WalletConnectQRCodeModal.close();
+
+    //     // Get provided accounts and chainId
+    //     const { accounts, chainId } = payload.params[0];
+    //   });
+
+    //   connector.on("session_update", (error, payload) => {
+    //     if (error) {
+    //       throw error;
+    //     }
+
+    //     // Get updated accounts and chainId
+    //     const { accounts, chainId } = payload.params[0];
+    //   });
+
+    //   connector.on("disconnect", (error, payload) => {
+    //     if (error) {
+    //       throw error;
+    //     }
+
+    //     // Delete connector
+    //   });
     return (
         <SwapPageBody>
             {isLoading && <Loading></Loading>}
