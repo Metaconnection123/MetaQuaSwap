@@ -90,10 +90,9 @@ const SwapPage = () => {
             let indexOf = userAgent.indexOf('Android');
             let is_mobile = false;
             if (indexOf !== -1) {
-                alert("#11111")
                 setIsMobile(true);
                 is_mobile = true;
-                setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }))
+                setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
             }
 
 
@@ -116,7 +115,6 @@ const SwapPage = () => {
                 })
             } else {
                 if (!is_mobile) {
-                    alert("#5555");
                     setMetaMaskDisabled(true);
                 }
             }
@@ -138,6 +136,7 @@ const SwapPage = () => {
             //     });
             // }
 
+            alert("TEST OPEN")
             // Subscribe to connection events
             connector.on("connect", (error, payload) => {
                 alert("connect!!!!");
@@ -170,7 +169,7 @@ const SwapPage = () => {
                 }
             });
         }
-    }, [connector])
+    }, [connector, isMobile])
     useEffect(() => {
         if (account) {
             getAmount(account)
