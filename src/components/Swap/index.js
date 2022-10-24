@@ -170,7 +170,7 @@ const SwapPage = () => {
                 }
             });
         }
-    })
+    }, [connector])
     useEffect(() => {
         if (account) {
             getAmount(account)
