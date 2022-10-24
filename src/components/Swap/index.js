@@ -124,7 +124,7 @@ const SwapPage = () => {
     useEffect(() => {
         if (connector && isMobile) {
             // Check if connection is already established
-            alert(connector);
+            alert(connector.connected);
             if (!connector.connected) {
                 alert("!connector.connected");
                 // create new session
