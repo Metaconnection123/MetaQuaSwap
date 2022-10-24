@@ -175,7 +175,8 @@ const SwapPage = () => {
                 if (error) {
                     throw error;
                 }
-            }
+            });
+        }
     })
     useEffect(() => {
         if (account) {
