@@ -64,7 +64,7 @@ const SwapPage = () => {
     const [calcSwapUnitWei, setCalcSwapUnitWei] = useState(0);
 
     const [swapBtnDisabled, setSwapBtnDisabled] = useState(true);
-    const [metaMaskDisabled, setMetaMaskDisabled] = useState(true);
+    const [metaMaskDisabled, setMetaMaskDisabled] = useState(false);
 
     const [isLackBalance, setIsLackBalance] = useState(false);
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
@@ -113,6 +113,7 @@ const SwapPage = () => {
                 })
             } else {
                 if (!isMobile) {
+                    alert("#5555");
                     setMetaMaskDisabled(true);
                 }
 
