@@ -88,9 +88,11 @@ const SwapPage = () => {
             // }
 
             let indexOf = userAgent.indexOf('Android');
+            let is_mobile = false;
             if (indexOf !== -1) {
                 alert("#11111")
                 setIsMobile(true);
+                is_mobile = true;
                 setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }))
             }
 
@@ -113,12 +115,10 @@ const SwapPage = () => {
                     setAccount(window.ethereum.selectedAddress)
                 })
             } else {
-                if (!isMobile) {
+                if (!is_mobile) {
                     alert("#5555");
                     setMetaMaskDisabled(true);
                 }
-
-
             }
         }
     }, [userAgent])
