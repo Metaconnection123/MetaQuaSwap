@@ -113,12 +113,18 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (userAgent) {
-            alert(userAgent);
-            if (userAgent.match(".*androidUrl.*")) {
-                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-                window.location.href = metaMaskStoreUrl;
-                return;
-            }
+            // alert(userAgent);
+            // if (userAgent.match(".*androidUrl.*")) {
+            //     let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+            //     window.location.href = metaMaskStoreUrl;
+            //     return;
+            // }
+
+            let indexOf = userAgent.indexOf('Android');
+
+            if (indexOf !== -1) {
+                alert(indexOf);
+            } 
         }
     }, [userAgent])
     useEffect(() => {
