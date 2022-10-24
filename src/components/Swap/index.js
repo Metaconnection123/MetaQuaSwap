@@ -125,9 +125,10 @@ const SwapPage = () => {
         if (connector && isMobile) {
             // Check if connection is already established
             if (!connector.connected) {
-                alert("TEST OPEN")
+                
                 // create new session
                 connector.createSession().then(() => {
+                    alert("connector.createSession");
                     // get uri for QR Code modal
                     const uri = connector.uri;
                     // display QR Code modal
@@ -140,7 +141,7 @@ const SwapPage = () => {
       
             // Subscribe to connection events
             connector.on("connect", (error, payload) => {
-                alert("connect!!!!");
+                alert("connector.on connect");
                 if (error) {
                     alert(error);
                     throw error;
@@ -156,6 +157,7 @@ const SwapPage = () => {
             });
 
             connector.on("session_update", (error, payload) => {
+                alert("connector.on session_update");
                 if (error) {
                     throw error;
                 }
@@ -165,6 +167,7 @@ const SwapPage = () => {
             });
 
             connector.on("disconnect", (error, payload) => {
+                alert("connector.on disconnect");
                 if (error) {
                     throw error;
                 }
