@@ -72,43 +72,8 @@ const SwapPage = () => {
     const [userAgent, setUserAgent] = useState();
     const [isMobile, setIsMobile] = useState(false);
     const [connector, setConnector] = useState();
-    useEffect(async () => {
-
+    useEffect(() => {
         setUserAgent(window.navigator.userAgent)
-
-        // async function sleepTest() {
-        //     await sleep(2000);
-        //     alert(userAgent);
-        //     if (userAgent.match(".*androidUrl.*")) {
-        //         let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-        //         window.location.href = metaMaskStoreUrl;
-        //         return;
-        //     }
-        // }
-        // sleepTest();
-
-        if (window.ethereum) {
-            setMetaMaskDisabled(false);
-            covertGoerli();
-            // convertMumbai();
-            connectAccount();
-            initWeb3();
-            // setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
-            // const contractabi = require('../../abi/TestToken11.json')
-
-            // setContractAddress('0x7af14917f768bba53a2f38439e60ee308fe5c7f6');
-            setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
-            const contractabi = require('../../abi/TestToken13.json')
-            setContractAbi(contractabi)
-
-            window.ethereum.on('accountsChanged', () => {
-                setAccount(window.ethereum.selectedAddress)
-            })
-        } else {
-            setMetaMaskDisabled(true);
-
-        }
-
         return () => {
         }
     }, [])
@@ -127,11 +92,37 @@ const SwapPage = () => {
                 setIsMobile(true);
                 setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }))
             }
+
+
+            if (window.ethereum) {
+                setMetaMaskDisabled(false);
+                covertGoerli();
+                // convertMumbai();
+                connectAccount();
+                initWeb3();
+                // setContractAddress('0xf9cd19Aa836Bd416b3BFB2fd6874c00380E20885');
+                // const contractabi = require('../../abi/TestToken11.json')
+
+                // setContractAddress('0x7af14917f768bba53a2f38439e60ee308fe5c7f6');
+                setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
+                const contractabi = require('../../abi/TestToken13.json')
+                setContractAbi(contractabi)
+
+                window.ethereum.on('accountsChanged', () => {
+                    setAccount(window.ethereum.selectedAddress)
+                })
+            } else {
+                if (!isMobile) {
+                    setMetaMaskDisabled(true);
+                }
+
+
+            }
         }
     }, [userAgent])
 
     useEffect(() => {
-        if (connector) {
+        if (connector && isMobile) {
             // Check if connection is already established
             // if (!connector.connected) {
             //     // create new session
