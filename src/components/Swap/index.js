@@ -5,6 +5,8 @@ import InsufficientCash from '../Modal/InsufficientCash';
 import CheckAmount from '../Modal/CheckAmount';
 import Loading from '../Loading/Loading';
 import axios from 'axios';
+import WalletConnect from "@walletconnect/browser";
+import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
 
 import {
     SwapPageBody,
@@ -72,16 +74,16 @@ const SwapPage = () => {
       
         setUserAgent(window.navigator.userAgent)
     
-        async function sleepTest() {
-            await sleep(2000);
-            alert(userAgent);
-            if (userAgent.match(".*androidUrl.*")) {
-                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-                window.location.href = metaMaskStoreUrl;
-                return;
-            }
-        }
-        sleepTest();
+        // async function sleepTest() {
+        //     await sleep(2000);
+        //     alert(userAgent);
+        //     if (userAgent.match(".*androidUrl.*")) {
+        //         let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+        //         window.location.href = metaMaskStoreUrl;
+        //         return;
+        //     }
+        // }
+        // sleepTest();
 
         if (window.ethereum) {
             setMetaMaskDisabled(false);
@@ -110,15 +112,22 @@ const SwapPage = () => {
     }, [])
 
     useEffect(() => {
+        if (userAgent) {
+            alert(userAgent);
+            if (userAgent.match(".*androidUrl.*")) {
+                let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
+                window.location.href = metaMaskStoreUrl;
+                return;
+            }
+        }
+    }, [userAgent])
+    useEffect(() => {
         if (account) {
             getAmount(account)
             getSwapPrice();
             inputAmountClear();
             setSwapBtnDisabled(true);
-            console.log("userAgent : ", userAgent);
-            
         }
-        alert(userAgent,"#2");
     }, [account, etherAmount, tokenAmount])
 
     const connectAccount = async () => {
@@ -329,9 +338,6 @@ const SwapPage = () => {
     }
 
     const convertToken = async (etherAmount) => {
-   
-
-
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
         let blockNumber = await web3.eth.getBlockNumber();
@@ -491,6 +497,54 @@ const SwapPage = () => {
             }, mil)
         })
     }
+
+//     // Create a connector
+// const connector = new WalletConnect({
+//     bridge: "https://bridge.walletconnect.org" // Required
+//   });
+  
+//   // Check if connection is already established
+//   if (!connector.connected) {
+//     // create new session
+//     connector.createSession().then(() => {
+//       // get uri for QR Code modal
+//       const uri = connector.uri;
+//       // display QR Code modal
+//       WalletConnectQRCodeModal.open(uri, () => {
+//         console.log("QR Code Modal closed");
+//       });
+//     });
+//   }
+  
+//   // Subscribe to connection events
+//   connector.on("connect", (error, payload) => {
+//     if (error) {
+//       throw error;
+//     }
+  
+//     // Close QR Code Modal
+//     WalletConnectQRCodeModal.close();
+  
+//     // Get provided accounts and chainId
+//     const { accounts, chainId } = payload.params[0];
+//   });
+  
+//   connector.on("session_update", (error, payload) => {
+//     if (error) {
+//       throw error;
+//     }
+  
+//     // Get updated accounts and chainId
+//     const { accounts, chainId } = payload.params[0];
+//   });
+  
+//   connector.on("disconnect", (error, payload) => {
+//     if (error) {
+//       throw error;
+//     }
+  
+//     // Delete connector
+//   });
     return (
         <SwapPageBody>
             {isLoading && <Loading></Loading>}
