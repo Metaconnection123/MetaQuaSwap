@@ -172,10 +172,15 @@ const SwapPage = () => {
     }, [connector, isMobile])
     useEffect(() => {
         if (account) {
+            console.log("#1");
             getAmount(account)
+            console.log("#2");
             getSwapPrice();
+            console.log("#3");
             inputAmountClear();
+            console.log("#4");
             setSwapBtnDisabled(true);
+            console.log("#5");
         }
     }, [account, etherAmount, tokenAmount])
 
@@ -277,13 +282,19 @@ const SwapPage = () => {
         if (!address) {
             return;
         }
+        console.log("#2 - 1");
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
+        console.log("#2 - 2");
         let tokenWei = await contract.methods.balanceOf(address).call();
+        console.log("#2 - 3");
         let token = web3.utils.fromWei(tokenWei.toString());
+        console.log("#2 - 4");
         setTokenAmount(token);
 
         let etherWei = await web3.eth.getBalance(address)
+        console.log("#2 - 5");
         let ether = web3.utils.fromWei(etherWei);
+        console.log("#2 - 6");
         setEtherAmount(ether);
     }
 
