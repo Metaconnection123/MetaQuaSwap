@@ -82,22 +82,19 @@ const SwapPage = () => {
 
         if (isMobile) {
             setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
-        }
-        
-        if (window.ethereum) {
-            setMetaMaskDisabled(false);
-            covertGoerli();
-            connectAccount();
-
-            window.ethereum.on('accountsChanged', () => {
-                setAccount(window.ethereum.selectedAddress)
-            })
         } else {
-            if (isMobile) {
+            if (window.ethereum) {
+                setMetaMaskDisabled(false);
+                covertGoerli();
+                connectAccount();
+    
+                window.ethereum.on('accountsChanged', () => {
+                    setAccount(window.ethereum.selectedAddress)
+                })
+            } else {
                 setMetaMaskDisabled(true);
             }
         }
-
         return () => {
         }
     }, [])
