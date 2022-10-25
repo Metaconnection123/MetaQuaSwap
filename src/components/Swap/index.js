@@ -172,7 +172,7 @@ const SwapPage = () => {
                     throw error;
                 }
 
-                // Get updated accounts and chainId
+              
                 const { accounts, chainId } = payload.params[0];
                 console.log("accounts : ", accounts);
                 console.log("chainId : ", chainId);
