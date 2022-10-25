@@ -7,7 +7,7 @@ import Loading from '../Loading/Loading';
 import axios from 'axios';
 import WalletConnect from "@walletconnect/browser";
 import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
-
+import {isMobile} from 'react-device-detect';
 import {
     SwapPageBody,
     Tab,
@@ -45,6 +45,7 @@ const SwapPage = () => {
 
     const [tokenAmount, setTokenAmount] = useState();
     const [etherAmount, setEtherAmount] = useState();
+    const [contract, setContract] = useState();
     const [contractAddress, setContractAddress] = useState();
     const [contractAbi, setContractAbi] = useState();
 
@@ -69,45 +70,43 @@ const SwapPage = () => {
     const [isLackBalance, setIsLackBalance] = useState(false);
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [userAgent, setUserAgent] = useState();
-    const [isMobile, setIsMobile] = useState(false);
+
     const [connector, setConnector] = useState();
+    const [isSuccess, setIsSuccess] = useState(false);
+
     useEffect(() => {
-        setUserAgent(window.navigator.userAgent)
-        initWeb3();
         setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
-        const contractabi = require('../../abi/TestToken13.json')
-        setContractAbi(contractabi);
+        const abi = require('../../abi/TestToken13.json')
+        setContractAbi(abi);
+        initWeb3();
+
+        if (isMobile) {
+            setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
+        }
+        
+        if (window.ethereum) {
+            setMetaMaskDisabled(false);
+            covertGoerli();
+            connectAccount();
+
+            window.ethereum.on('accountsChanged', () => {
+                setAccount(window.ethereum.selectedAddress)
+            })
+        } else {
+            if (isMobile) {
+                setMetaMaskDisabled(true);
+            }
+        }
+
         return () => {
         }
     }, [])
 
     useEffect(() => {
-        if (userAgent) {
-            let indexOf = userAgent.indexOf('Android');
-            let is_mobile = false;
-
-            if (indexOf !== -1) {
-                setIsMobile(true);
-                is_mobile = true;
-                setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
-            }
-            
-            if (window.ethereum) {
-                setMetaMaskDisabled(false);
-                covertGoerli();
-                connectAccount();
-
-                window.ethereum.on('accountsChanged', () => {
-                    setAccount(window.ethereum.selectedAddress)
-                })
-            } else {
-                if (!is_mobile) {
-                    setMetaMaskDisabled(true);
-                }
-            }
+        if (web3) {
+            initContract(contractAbi, contractAddress);
         }
-    }, [userAgent])
+    },[web3])
 
     useEffect(() => {
         if (connector && isMobile) {
@@ -169,21 +168,32 @@ const SwapPage = () => {
                 }
             });
         }
-    }, [connector, isMobile])
+    }, [connector])
+
     useEffect(() => {
         if (account) {
-            console.log("#1");
-            getAmount(account)
-            console.log("#2");
-            getSwapPrice();
-            console.log("#3");
-            inputAmountClear();
-            console.log("#4");
-            setSwapBtnDisabled(true);
-            console.log("#5");
-        }
-    }, [account, etherAmount, tokenAmount])
+            // setAmount(account)
+            setBweTokenAmount(account);
+            setEthereumAmount(account);
 
+            setSwapPrice();
+            inputAmountClear();
+            setSwapBtnDisabled(true);
+        }
+    }, [account])
+
+
+    useEffect(() => {
+        if (isSuccess) {
+            setBweTokenAmount(account);
+            setEthereumAmount(account);
+
+            setSwapPrice();
+            inputAmountClear();
+            setSwapBtnDisabled(true);
+            setIsSuccess(false);
+        }
+    }, [isSuccess])
     const connectAccount = async () => {
         let accounts = await window.ethereum.request({
             method: "eth_requestAccounts"
@@ -238,8 +248,8 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (account) {
-            getAmount(account)
-            getSwapPrice();
+            // setAmount(account)
+            setSwapPrice();
         }
     }, [chainId])
 
@@ -252,7 +262,6 @@ const SwapPage = () => {
             });
             setChainId(parseInt(cid, 16).toString());
         } catch (error) {
-            console.log("#111111");
             console.log(error);
         }
     }
@@ -268,36 +277,34 @@ const SwapPage = () => {
     //     }
     // }
 
-    const getSwapPrice = async () => {
+    const setSwapPrice = async () => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
         let calcSwapUnitWei = await contract.methods.getSwapPrice().call();
         setCalcSwapUnitWei(calcSwapUnitWei);
-
         let swapUnit = web3.utils.fromWei(calcSwapUnitWei.toString())
         setViewSwapUnit(swapUnit);
     }
 
 
-    const getAmount = async (address) => {
+    const initContract = async (contractAbi, contractAddress) => {
+        const tmpContract = await new web3.eth.Contract(contractAbi, contractAddress);
+        setContract(tmpContract);
+    }
+
+    const setBweTokenAmount = async (address) => {
         if (!address) {
             return;
         }
-        console.log("#2 - 1");
-        const contract = await new web3.eth.Contract(contractAbi, contractAddress);
-        console.log("#2 - 2");
         let tokenWei = await contract.methods.balanceOf(address).call();
-        console.log("#2 - 3");
         let token = web3.utils.fromWei(tokenWei.toString());
-        console.log("#2 - 4");
         setTokenAmount(token);
-
-        let etherWei = await web3.eth.getBalance(address)
-        console.log("#2 - 5");
-        let ether = web3.utils.fromWei(etherWei);
-        console.log("#2 - 6");
-        setEtherAmount(ether);
     }
 
+    const setEthereumAmount = async (address) =>{
+        let etherWei = await web3.eth.getBalance(address)
+        let ether = web3.utils.fromWei(etherWei);
+        setEtherAmount(ether);
+    }
 
     const assetValidation = () => {
         if (isOpenedTab1) {
@@ -387,6 +394,7 @@ const SwapPage = () => {
                     setTokenAmount(0);
                     inputAmountClear();
                     setIsLoading(false);
+                    setIsSuccess(true);
                 } else {
 
                 }
@@ -512,6 +520,7 @@ const SwapPage = () => {
                     setTokenAmount(0);
                     inputAmountClear();
                     setIsLoading(false);
+                    setIsSuccess(true);
                 } else {
 
                 }
@@ -608,54 +617,6 @@ const SwapPage = () => {
             }, mil)
         })
     }
-
-    //    // Create a connector
-    // const connector = new WalletConnect({
-    //     bridge: "https://bridge.walletconnect.org" // Required
-    //   });
-
-    //   // Check if connection is already established
-    //   if (!connector.connected) {
-    //     // create new session
-    //     connector.createSession().then(() => {
-    //       // get uri for QR Code modal
-    //       const uri = connector.uri;
-    //       // display QR Code modal
-    //       WalletConnectQRCodeModal.open(uri, () => {
-    //         console.log("QR Code Modal closed");
-    //       });
-    //     });
-    //   }
-
-    //   // Subscribe to connection events
-    //   connector.on("connect", (error, payload) => {
-    //     if (error) {
-    //       throw error;
-    //     }
-
-    //     // Close QR Code Modal
-    //     WalletConnectQRCodeModal.close();
-
-    //     // Get provided accounts and chainId
-    //     const { accounts, chainId } = payload.params[0];
-    //   });
-
-    //   connector.on("session_update", (error, payload) => {
-    //     if (error) {
-    //       throw error;
-    //     }
-
-    //     // Get updated accounts and chainId
-    //     const { accounts, chainId } = payload.params[0];
-    //   });
-
-    //   connector.on("disconnect", (error, payload) => {
-    //     if (error) {
-    //       throw error;
-    //     }
-
-    //     // Delete connector
-    //   });
     return (
         <SwapPageBody>
             {isLoading && <Loading></Loading>}
