@@ -294,17 +294,25 @@ const SwapPage = () => {
     }
 
     const setBweTokenAmount = async (address) => {
+        console.log("setBweTokenAmount : address : ", address)
         if (!address) {
             return;
         }
+        console.log("setBweTokenAmount : contract : ", contract)
         let tokenWei = await contract.methods.balanceOf(address).call();
+        console.log("setBweTokenAmount : tokenWei : ", tokenWei)
         let token = web3.utils.fromWei(tokenWei.toString());
+        console.log("setBweTokenAmount : token : ", token)
         setTokenAmount(token);
     }
 
     const setEthereumAmount = async (address) =>{
+        console.log("setEthereumAmount : address : ", address)
+        console.log("setEthereumAmount : web3 : ", web3)
         let etherWei = await web3.eth.getBalance(address)
+        console.log("setEthereumAmount : etherWei : ", etherWei)
         let ether = web3.utils.fromWei(etherWei);
+        console.log("setEthereumAmount : ether : ", ether)
         setEtherAmount(ether);
     }
 
