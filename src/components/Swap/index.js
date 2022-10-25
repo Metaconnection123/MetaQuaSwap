@@ -131,9 +131,11 @@ const SwapPage = () => {
                         console.log("QR Code Modal closed");
                     });
                 });
+            } else {
+                console.log(connector._accounts[0]);
             }
 
-      
+
             // Subscribe to connection events
             connector.on("connect", (error, payload) => {
                 console.log("connector.on connect");
@@ -389,6 +391,48 @@ const SwapPage = () => {
         }
     }
 
+    const convertTokenWithMobile = async (etherAmount) => {
+        const contract = await new web3.eth.Contract(contractAbi, contractAddress);
+
+        let blockNumber = await web3.eth.getBlockNumber();
+        let block = await web3.eth.getBlock(blockNumber);
+        let maxFeePerGas = (block.baseFeePerGas * 2) + 2500000000;
+        let maxFeePerGasHex = web3.utils.toHex(maxFeePerGas.toString());
+
+        var data = contract.methods.convertToken().encodeABI();
+        let amount = web3.utils.toHex(web3.utils.toWei(etherAmount.toString()));
+        let estimateGas = await web3.eth.estimateGas({
+            'from': account,
+            'to': contractAddress,
+            'data': data,
+            'value': amount
+        })
+
+        const trxParameters = {
+            'from': account,
+            'to': contractAddress,
+            'gas': String(estimateGas),
+            'maxFeePerGas': maxFeePerGasHex,
+            'maxPriorityFeePerGas': "0x77359400", //Miner Tip 2Gwei
+            'data': data,
+            'value': amount
+        };
+
+        try {
+            // Send transaction
+            connector.sendTransaction(trxParameters)
+                .then((result) => {
+                    // Returns transaction id (hash)
+                    console.log(result);
+                })
+                .catch((error) => {
+                    // Error returned when rejected
+                    console.error(error);
+                });
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const convertToken = async (etherAmount) => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
