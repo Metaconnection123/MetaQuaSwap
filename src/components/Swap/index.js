@@ -275,6 +275,8 @@ const SwapPage = () => {
     useEffect(() => {
         if (account) {
             // setAmount(account)
+            setBweTokenAmount(account);
+            setEthereumAmount(account);
             setSwapPrice();
         }
     }, [chainId])
@@ -321,25 +323,17 @@ const SwapPage = () => {
     }
 
     const setBweTokenAmount = async (address) => {
-        console.log("setBweTokenAmount : address : ", address)
         if (!address) {
             return;
         }
-        console.log("setBweTokenAmount : contract : ", contract)
         let tokenWei = await contract.methods.balanceOf(address).call();
-        console.log("setBweTokenAmount : tokenWei : ", tokenWei)
         let token = web3.utils.fromWei(tokenWei.toString());
-        console.log("setBweTokenAmount : token : ", token)
         setTokenAmount(token);
     }
 
     const setEthereumAmount = async (address) => {
-        console.log("setEthereumAmount : address : ", address)
-        console.log("setEthereumAmount : web3 : ", web3)
         let etherWei = await web3.eth.getBalance(address)
-        console.log("setEthereumAmount : etherWei : ", etherWei)
         let ether = web3.utils.fromWei(etherWei);
-        console.log("setEthereumAmount : ether : ", ether)
         setEtherAmount(ether);
     }
 
@@ -533,21 +527,15 @@ const SwapPage = () => {
             };
 
             if (isMobile) {
-                txHash = await web3.eth.sendTransaction(trxParameters);
-                console.log("sendTransaction : ", txHash);
                 setIsLoading(true);
-                whenTransactionMined(txHash, (receipt) => {
-                    if (receipt.status) {
-                        console.log("receipt : ", receipt);
-
-                        setEtherAmount(0);
-                        setTokenAmount(0);
-                        inputAmountClear();
-                        setIsLoading(false);
-                        setIsSuccess(true);
-                    } 
-    
-                });
+                let result = await web3.eth.sendTransaction(trxParameters);
+                console.log(result);
+                setEtherAmount(0);
+                setTokenAmount(0);
+                inputAmountClear();
+                setIsLoading(false);
+                setIsSuccess(true);
+          
             } else {
                 txHash = await window.ethereum.request({
                     method: "eth_sendTransaction",
