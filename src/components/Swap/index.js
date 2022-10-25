@@ -519,26 +519,41 @@ const SwapPage = () => {
         let txHash = null;
 
         try {
+                
+            var whenTransactionMined = function (tx, callback) {
+                var check = setInterval(() => {
+                    web3.eth.getTransactionReceipt(tx, (e, receipt) => {
+                        console.log("Transaction Pending...")
+                        if (receipt) {
+                            clearInterval(check);
+                            callback(receipt);
+                        }
+                    })
+                }, 2000);
+            };
+
             if (isMobile) {
-                const txHash = await web3.eth.sendTransaction(trxParameters);
-                console.log(txHash)
+                txHash = await web3.eth.sendTransaction(trxParameters);
+                console.log("sendTransaction : ", txHash);
+                setIsLoading(true);
+                whenTransactionMined(txHash, (receipt) => {
+                    if (receipt.status) {
+                        console.log("receipt : ", receipt);
+
+                        setEtherAmount(0);
+                        setTokenAmount(0);
+                        inputAmountClear();
+                        setIsLoading(false);
+                        setIsSuccess(true);
+                    } 
+    
+                });
             } else {
                 txHash = await window.ethereum.request({
                     method: "eth_sendTransaction",
                     params: [trxParameters]
                 })
-    
-                var whenTransactionMined = function (tx, callback) {
-                    var check = setInterval(() => {
-                        web3.eth.getTransactionReceipt(tx, (e, receipt) => {
-                            console.log("Transaction Pending...")
-                            if (receipt) {
-                                clearInterval(check);
-                                callback(receipt);
-                            }
-                        })
-                    }, 2000);
-                };
+
     
                 setIsLoading(true);
                 whenTransactionMined(txHash, (receipt) => {
