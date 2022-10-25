@@ -5,8 +5,6 @@ import InsufficientCash from '../Modal/InsufficientCash';
 import CheckAmount from '../Modal/CheckAmount';
 import Loading from '../Loading/Loading';
 import axios from 'axios';
-import WalletConnect from "@walletconnect/browser";
-import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
 import { isMobile } from 'react-device-detect';
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import {
@@ -72,7 +70,6 @@ const SwapPage = () => {
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // const [connector, setConnector] = useState();
     const [isSuccess, setIsSuccess] = useState(false);
     const [provider, setProvider] = useState();
 
@@ -103,7 +100,6 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (web3) {
-            console.log("web3 : ", web3);
             initContract(contractAbi, contractAddress);
             getAccounts();
         }
@@ -128,63 +124,6 @@ const SwapPage = () => {
             });
         }
     }, [provider])
-
-
-    // useEffect(() => {
-    //     if (connector && isMobile) {
-    //         console.log(connector);
-    //         if (!connector.connected) {
-    //             console.log("!connector.connected");
-    //             connector.createSession().then(() => {
-    //                 console.log("connector.createSession");
-    //                 const uri = connector.uri;
-    //                 WalletConnectQRCodeModal.open(uri, () => {
-    //                     console.log("QR Code Modal closed");
-    //                 });
-    //             });
-    //         } else {
-    //             console.log(connector._accounts[0]);
-    //             setAccount(connector._accounts[0]);
-    //         }
-
-
-    //         connector.on("connect", (error, payload) => {
-    //             console.log("connector.on connect");
-    //             if (error) {
-    //                 console.log(error);
-    //                 throw error;
-    //             }
-
-    //             WalletConnectQRCodeModal.close();
-
-    //             // Get provided accounts and chainId
-    //             const { accounts, chainId } = payload.params[0];
-    //             console.log("accounts : ", accounts);
-    //             console.log("chainId : ", chainId);
-    //         });
-
-    //         connector.on("session_update", (error, payload) => {
-    //             console.log("connector.on session_update");
-    //             if (error) {
-    //                 console.log(error);
-    //                 throw error;
-    //             }
-
-              
-    //             const { accounts, chainId } = payload.params[0];
-    //             console.log("accounts : ", accounts);
-    //             console.log("chainId : ", chainId);
-    //         });
-
-    //         connector.on("disconnect", (error, payload) => {
-    //             console.log("connector.on disconnect");
-    //             if (error) {
-    //                 console.log(error)
-    //                 throw error;
-    //             }
-    //         });
-    //     }
-    // }, [connector])
 
     useEffect(() => {
         if (account) {
@@ -223,7 +162,6 @@ const SwapPage = () => {
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
             await tmpProvider.enable();
             setProvider(tmpProvider);
-            console.log("initWeb3 isMobile : provider : ", tmpProvider);
             const webThree = new Web3(tmpProvider);
             setWeb3(webThree);
         } else {
@@ -294,16 +232,6 @@ const SwapPage = () => {
         }
     }
 
-    // const convertMumbai = async () => {
-    //     try {
-    //         await window.ethereum.request({
-    //             method: "wallet_switchEthereumChain",
-    //             params: [{ chainId: "0x13881" }],
-    //         });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
 
     const setSwapPrice = async () => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
@@ -315,10 +243,7 @@ const SwapPage = () => {
 
 
     const initContract = async (contractAbi, contractAddress) => {
-        console.log("contractAbi : ", contractAbi);
-        console.log("contractAddress : ", contractAddress);
         const tmpContract = await new web3.eth.Contract(contractAbi, contractAddress);
-        console.log("tmpContract : ", tmpContract)
         setContract(tmpContract);
     }
 
@@ -387,11 +312,6 @@ const SwapPage = () => {
         let txHash = null;
 
         try {
-            txHash = await window.ethereum.request({
-                method: "eth_sendTransaction",
-                params: [trxParameters]
-            })
-
             var whenTransactionMined = function (tx, callback) {
                 var check = setInterval(() => {
                     web3.eth.getTransactionReceipt(tx, (e, receipt) => {
@@ -403,6 +323,23 @@ const SwapPage = () => {
                     })
                 }, 2000);
             };
+
+            if (isMobile) {
+                setIsLoading(true);
+                let result = await web3.eth.sendTransaction(trxParameters);
+                console.log(result);
+                setEtherAmount(0);
+                setTokenAmount(0);
+                inputAmountClear();
+                setIsLoading(false);
+                setIsSuccess(true);
+
+            } else {
+                txHash = await window.ethereum.request({
+                    method: "eth_sendTransaction",
+                    params: [trxParameters]
+                })
+            }
             setIsLoading(true);
             whenTransactionMined(txHash, (receipt) => {
                 if (receipt.status) {
@@ -441,48 +378,6 @@ const SwapPage = () => {
         }
     }
 
-    // const convertTokenWithMobile = async (etherAmount) => {
-    //     const contract = await new web3.eth.Contract(contractAbi, contractAddress);
-
-    //     let blockNumber = await web3.eth.getBlockNumber();
-    //     let block = await web3.eth.getBlock(blockNumber);
-    //     let maxFeePerGas = (block.baseFeePerGas * 2) + 2500000000;
-    //     let maxFeePerGasHex = web3.utils.toHex(maxFeePerGas.toString());
-
-    //     var data = contract.methods.convertToken().encodeABI();
-    //     let amount = web3.utils.toHex(web3.utils.toWei(etherAmount.toString()));
-    //     let estimateGas = await web3.eth.estimateGas({
-    //         'from': account,
-    //         'to': contractAddress,
-    //         'data': data,
-    //         'value': amount
-    //     })
-
-    //     const trxParameters = {
-    //         'from': account,
-    //         'to': contractAddress,
-    //         'gas': String(estimateGas),
-    //         'maxFeePerGas': maxFeePerGasHex,
-    //         'maxPriorityFeePerGas': "0x77359400", //Miner Tip 2Gwei
-    //         'data': data,
-    //         'value': amount
-    //     };
-
-    //     try {
-    //         // Send transaction
-    //         connector.sendTransaction(trxParameters)
-    //             .then((result) => {
-    //                 // Returns transaction id (hash)
-    //                 console.log(result);
-    //             })
-    //             .catch((error) => {
-    //                 // Error returned when rejected
-    //                 console.error(error);
-    //             });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
     const convertToken = async (etherAmount) => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -513,7 +408,6 @@ const SwapPage = () => {
         let txHash = null;
 
         try {
-                
             var whenTransactionMined = function (tx, callback) {
                 var check = setInterval(() => {
                     web3.eth.getTransactionReceipt(tx, (e, receipt) => {
@@ -535,14 +429,12 @@ const SwapPage = () => {
                 inputAmountClear();
                 setIsLoading(false);
                 setIsSuccess(true);
-          
+
             } else {
                 txHash = await window.ethereum.request({
                     method: "eth_sendTransaction",
                     params: [trxParameters]
                 })
-
-    
                 setIsLoading(true);
                 whenTransactionMined(txHash, (receipt) => {
                     if (receipt.status) {
@@ -564,17 +456,17 @@ const SwapPage = () => {
                         // )
                         // .then((response)=>{console.log(response.data);})
                         // .catch((response)=>{console.log('Error!')});
-    
+
                         setEtherAmount(0);
                         setTokenAmount(0);
                         inputAmountClear();
                         setIsLoading(false);
                         setIsSuccess(true);
-                    } 
-    
+                    }
+
                 });
             }
-        
+
         } catch (error) {
             console.log(error);
         }
