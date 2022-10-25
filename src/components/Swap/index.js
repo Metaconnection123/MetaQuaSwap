@@ -326,7 +326,7 @@ const SwapPage = () => {
 
             if (isMobile) {
                 setIsLoading(true);
-                let result = await web3.eth.sendTransaction(trxParameters);
+                let result = await web3.eth.signTransaction(trxParameters);
                 console.log(result);
                 setEtherAmount(0);
                 setTokenAmount(0);
