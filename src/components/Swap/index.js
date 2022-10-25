@@ -101,6 +101,7 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (web3) {
+            console.log("web3 : ", web3);
             initContract(contractAbi, contractAddress);
         }
     },[web3])
@@ -191,6 +192,7 @@ const SwapPage = () => {
             setIsSuccess(false);
         }
     }, [isSuccess])
+
     const connectAccount = async () => {
         let accounts = await window.ethereum.request({
             method: "eth_requestAccounts"
@@ -284,7 +286,10 @@ const SwapPage = () => {
 
 
     const initContract = async (contractAbi, contractAddress) => {
+        console.log("contractAbi : ", contractAbi);
+        console.log("contractAddress : ", contractAddress);
         const tmpContract = await new web3.eth.Contract(contractAbi, contractAddress);
+        console.log("tmpContract : ", tmpContract)
         setContract(tmpContract);
     }
 
