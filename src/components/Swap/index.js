@@ -89,7 +89,6 @@ const SwapPage = () => {
                 setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
             }
 
-
             if (window.ethereum) {
                 setMetaMaskDisabled(false);
                 covertGoerli();
@@ -133,6 +132,7 @@ const SwapPage = () => {
                 });
             } else {
                 console.log(connector._accounts[0]);
+                setAccount(connector._accounts[0]);
             }
 
 
@@ -512,7 +512,6 @@ const SwapPage = () => {
 
             });
         } catch (error) {
-            console.log("#3333")
             console.log(error);
         }
     }
@@ -575,9 +574,19 @@ const SwapPage = () => {
 
     const convertAmount = () => {
         if (isOpenedTab1) {
-            convertToken(viewInputEther);
+            if (isMobile) {
+                convertTokenWithMobile(viewInputEther);
+            } else {
+                convertToken(viewInputEther);
+            }
+           
         } else {
-            convertEther(viewInputToken);
+            if (isMobile) {
+
+            } else {
+                convertEther(viewInputToken);
+            }
+          
         }
         setSwapAmtChkModal(false);
     }
