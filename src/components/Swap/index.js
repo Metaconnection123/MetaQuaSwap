@@ -72,7 +72,7 @@ const SwapPage = () => {
     const [isSwapAmtChkModal, setSwapAmtChkModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const [connector, setConnector] = useState();
+    // const [connector, setConnector] = useState();
     const [isSuccess, setIsSuccess] = useState(false);
     const [provider, setProvider] = useState();
 
@@ -83,7 +83,7 @@ const SwapPage = () => {
         setContractAbi(require('../../abi/TestToken13.json'));
         initWeb3();
         if (isMobile) {
-            setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
+            // setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
         } else {
             if (window.ethereum) {
                 setMetaMaskDisabled(false);
@@ -105,6 +105,7 @@ const SwapPage = () => {
         if (web3) {
             console.log("web3 : ", web3);
             initContract(contractAbi, contractAddress);
+            getAccounts();
         }
     }, [web3])
 
@@ -113,6 +114,7 @@ const SwapPage = () => {
             // Subscribe to accounts change
             provider.on("accountsChanged", (accounts) => {
                 console.log("accountChanged : provider : ", accounts);
+                setAccount(accounts[0]);
             });
 
             // Subscribe to chainId change
@@ -128,61 +130,61 @@ const SwapPage = () => {
     }, [provider])
 
 
-    useEffect(() => {
-        if (connector && isMobile) {
-            console.log(connector);
-            if (!connector.connected) {
-                console.log("!connector.connected");
-                connector.createSession().then(() => {
-                    console.log("connector.createSession");
-                    const uri = connector.uri;
-                    WalletConnectQRCodeModal.open(uri, () => {
-                        console.log("QR Code Modal closed");
-                    });
-                });
-            } else {
-                console.log(connector._accounts[0]);
-                setAccount(connector._accounts[0]);
-            }
+    // useEffect(() => {
+    //     if (connector && isMobile) {
+    //         console.log(connector);
+    //         if (!connector.connected) {
+    //             console.log("!connector.connected");
+    //             connector.createSession().then(() => {
+    //                 console.log("connector.createSession");
+    //                 const uri = connector.uri;
+    //                 WalletConnectQRCodeModal.open(uri, () => {
+    //                     console.log("QR Code Modal closed");
+    //                 });
+    //             });
+    //         } else {
+    //             console.log(connector._accounts[0]);
+    //             setAccount(connector._accounts[0]);
+    //         }
 
 
-            connector.on("connect", (error, payload) => {
-                console.log("connector.on connect");
-                if (error) {
-                    console.log(error);
-                    throw error;
-                }
+    //         connector.on("connect", (error, payload) => {
+    //             console.log("connector.on connect");
+    //             if (error) {
+    //                 console.log(error);
+    //                 throw error;
+    //             }
 
-                WalletConnectQRCodeModal.close();
+    //             WalletConnectQRCodeModal.close();
 
-                // Get provided accounts and chainId
-                const { accounts, chainId } = payload.params[0];
-                console.log("accounts : ", accounts);
-                console.log("chainId : ", chainId);
-            });
+    //             // Get provided accounts and chainId
+    //             const { accounts, chainId } = payload.params[0];
+    //             console.log("accounts : ", accounts);
+    //             console.log("chainId : ", chainId);
+    //         });
 
-            connector.on("session_update", (error, payload) => {
-                console.log("connector.on session_update");
-                if (error) {
-                    console.log(error);
-                    throw error;
-                }
+    //         connector.on("session_update", (error, payload) => {
+    //             console.log("connector.on session_update");
+    //             if (error) {
+    //                 console.log(error);
+    //                 throw error;
+    //             }
 
               
-                const { accounts, chainId } = payload.params[0];
-                console.log("accounts : ", accounts);
-                console.log("chainId : ", chainId);
-            });
+    //             const { accounts, chainId } = payload.params[0];
+    //             console.log("accounts : ", accounts);
+    //             console.log("chainId : ", chainId);
+    //         });
 
-            connector.on("disconnect", (error, payload) => {
-                console.log("connector.on disconnect");
-                if (error) {
-                    console.log(error)
-                    throw error;
-                }
-            });
-        }
-    }, [connector])
+    //         connector.on("disconnect", (error, payload) => {
+    //             console.log("connector.on disconnect");
+    //             if (error) {
+    //                 console.log(error)
+    //                 throw error;
+    //             }
+    //         });
+    //     }
+    // }, [connector])
 
     useEffect(() => {
         if (account) {
@@ -357,6 +359,11 @@ const SwapPage = () => {
 
     }
 
+    const getAccounts = async () => {
+        const accounts = await web3.eth.getAccounts();
+        setAccount(accounts[0]);
+    }
+
     const convertEther = async (tokenAmount) => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -440,48 +447,48 @@ const SwapPage = () => {
         }
     }
 
-    const convertTokenWithMobile = async (etherAmount) => {
-        const contract = await new web3.eth.Contract(contractAbi, contractAddress);
+    // const convertTokenWithMobile = async (etherAmount) => {
+    //     const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
-        let blockNumber = await web3.eth.getBlockNumber();
-        let block = await web3.eth.getBlock(blockNumber);
-        let maxFeePerGas = (block.baseFeePerGas * 2) + 2500000000;
-        let maxFeePerGasHex = web3.utils.toHex(maxFeePerGas.toString());
+    //     let blockNumber = await web3.eth.getBlockNumber();
+    //     let block = await web3.eth.getBlock(blockNumber);
+    //     let maxFeePerGas = (block.baseFeePerGas * 2) + 2500000000;
+    //     let maxFeePerGasHex = web3.utils.toHex(maxFeePerGas.toString());
 
-        var data = contract.methods.convertToken().encodeABI();
-        let amount = web3.utils.toHex(web3.utils.toWei(etherAmount.toString()));
-        let estimateGas = await web3.eth.estimateGas({
-            'from': account,
-            'to': contractAddress,
-            'data': data,
-            'value': amount
-        })
+    //     var data = contract.methods.convertToken().encodeABI();
+    //     let amount = web3.utils.toHex(web3.utils.toWei(etherAmount.toString()));
+    //     let estimateGas = await web3.eth.estimateGas({
+    //         'from': account,
+    //         'to': contractAddress,
+    //         'data': data,
+    //         'value': amount
+    //     })
 
-        const trxParameters = {
-            'from': account,
-            'to': contractAddress,
-            'gas': String(estimateGas),
-            'maxFeePerGas': maxFeePerGasHex,
-            'maxPriorityFeePerGas': "0x77359400", //Miner Tip 2Gwei
-            'data': data,
-            'value': amount
-        };
+    //     const trxParameters = {
+    //         'from': account,
+    //         'to': contractAddress,
+    //         'gas': String(estimateGas),
+    //         'maxFeePerGas': maxFeePerGasHex,
+    //         'maxPriorityFeePerGas': "0x77359400", //Miner Tip 2Gwei
+    //         'data': data,
+    //         'value': amount
+    //     };
 
-        try {
-            // Send transaction
-            connector.sendTransaction(trxParameters)
-                .then((result) => {
-                    // Returns transaction id (hash)
-                    console.log(result);
-                })
-                .catch((error) => {
-                    // Error returned when rejected
-                    console.error(error);
-                });
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //     try {
+    //         // Send transaction
+    //         connector.sendTransaction(trxParameters)
+    //             .then((result) => {
+    //                 // Returns transaction id (hash)
+    //                 console.log(result);
+    //             })
+    //             .catch((error) => {
+    //                 // Error returned when rejected
+    //                 console.error(error);
+    //             });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
     const convertToken = async (etherAmount) => {
         const contract = await new web3.eth.Contract(contractAbi, contractAddress);
 
@@ -624,19 +631,19 @@ const SwapPage = () => {
 
     const convertAmount = () => {
         if (isOpenedTab1) {
-            if (isMobile) {
-                convertTokenWithMobile(viewInputEther);
-            } else {
-                convertToken(viewInputEther);
-            }
-
+            // if (isMobile) {
+            //     convertTokenWithMobile(viewInputEther);
+            // } else {
+            //     convertToken(viewInputEther);
+            // }
+            convertToken(viewInputEther);
         } else {
-            if (isMobile) {
+            // if (isMobile) {
 
-            } else {
-                convertEther(viewInputToken);
-            }
-
+            // } else {
+            //     convertEther(viewInputToken);
+            // }
+            convertEther(viewInputToken);
         }
         setSwapAmtChkModal(false);
     }
