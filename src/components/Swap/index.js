@@ -7,7 +7,8 @@ import Loading from '../Loading/Loading';
 import axios from 'axios';
 import WalletConnect from "@walletconnect/browser";
 import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
-import {isMobile} from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import {
     SwapPageBody,
     Tab,
@@ -73,7 +74,7 @@ const SwapPage = () => {
 
     const [connector, setConnector] = useState();
     const [isSuccess, setIsSuccess] = useState(false);
-
+    const [provider, setProvider] = useState();
     useEffect(() => {
         setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
         const abi = require('../../abi/TestToken13.json')
@@ -82,12 +83,13 @@ const SwapPage = () => {
 
         if (isMobile) {
             setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
+            setProvider(new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" }))
         } else {
             if (window.ethereum) {
                 setMetaMaskDisabled(false);
                 covertGoerli();
                 connectAccount();
-    
+
                 window.ethereum.on('accountsChanged', () => {
                     setAccount(window.ethereum.selectedAddress)
                 })
@@ -104,8 +106,26 @@ const SwapPage = () => {
             console.log("web3 : ", web3);
             initContract(contractAbi, contractAddress);
         }
-    },[web3])
+    }, [web3])
 
+    useEffect(() => {
+        if (provider) {
+            // Subscribe to accounts change
+            provider.on("accountsChanged", (accounts) => {
+                console.log("accountChanged : provider : ", accounts);
+            });
+
+            // Subscribe to chainId change
+            provider.on("chainChanged", (chainId) => {
+                console.log("accountChanged : chainChanged : ", chainId);
+            });
+
+            // Subscribe to session disconnection
+            provider.on("disconnect", (code, reason) => {
+                console.log("accountChanged : disconnect : ", code, reason);
+            });
+        }
+    }, [provider])
     useEffect(() => {
         if (connector && isMobile) {
             // Check if connection is already established
@@ -201,8 +221,13 @@ const SwapPage = () => {
     }
 
     const initWeb3 = () => {
-        const webThree = new Web3(window.ethereum);
-        setWeb3(webThree);
+        if (isMobile) {
+            const webThree = new Web3(provider);
+            setWeb3(webThree);
+        } else {
+            const webThree = new Web3(window.ethereum);
+            setWeb3(webThree);
+        }
     }
 
 
@@ -306,7 +331,7 @@ const SwapPage = () => {
         setTokenAmount(token);
     }
 
-    const setEthereumAmount = async (address) =>{
+    const setEthereumAmount = async (address) => {
         console.log("setEthereumAmount : address : ", address)
         console.log("setEthereumAmount : web3 : ", web3)
         let etherWei = await web3.eth.getBalance(address)
@@ -604,14 +629,14 @@ const SwapPage = () => {
             } else {
                 convertToken(viewInputEther);
             }
-           
+
         } else {
             if (isMobile) {
 
             } else {
                 convertEther(viewInputToken);
             }
-          
+
         }
         setSwapAmtChkModal(false);
     }
