@@ -128,16 +128,12 @@ const SwapPage = () => {
     }, [provider])
     useEffect(() => {
         if (connector && isMobile) {
-            // Check if connection is already established
             console.log(connector);
             if (!connector.connected) {
                 console.log("!connector.connected");
-                // create new session
                 connector.createSession().then(() => {
                     console.log("connector.createSession");
-                    // get uri for QR Code modal
                     const uri = connector.uri;
-                    // display QR Code modal
                     WalletConnectQRCodeModal.open(uri, () => {
                         console.log("QR Code Modal closed");
                     });
@@ -148,7 +144,6 @@ const SwapPage = () => {
             }
 
 
-            // Subscribe to connection events
             connector.on("connect", (error, payload) => {
                 console.log("connector.on connect");
                 if (error) {
@@ -156,7 +151,6 @@ const SwapPage = () => {
                     throw error;
                 }
 
-                // Close QR Code Modal
                 WalletConnectQRCodeModal.close();
 
                 // Get provided accounts and chainId
