@@ -80,13 +80,10 @@ const SwapPage = () => {
 
     useEffect(() => {
         setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
-        const abi = require('../../abi/TestToken13.json')
-        setContractAbi(abi);
+        setContractAbi(require('../../abi/TestToken13.json'));
         initWeb3();
-
         if (isMobile) {
             setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
-            
         } else {
             if (window.ethereum) {
                 setMetaMaskDisabled(false);
@@ -219,9 +216,10 @@ const SwapPage = () => {
         setAccount(accounts[0]);
     }
 
-    const initWeb3 = () => {
+    const initWeb3 = async () => {
         if (isMobile) {
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
+            await tmpProvider.enable();
             setProvider(tmpProvider);
             console.log("initWeb3 isMobile : provider : ", tmpProvider);
             const webThree = new Web3(tmpProvider);
