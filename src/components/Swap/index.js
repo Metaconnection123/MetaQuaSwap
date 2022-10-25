@@ -80,15 +80,9 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (userAgent) {
-            // alert(userAgent);
-            // if (userAgent.match(".*androidUrl.*")) {
-            //     let metaMaskStoreUrl = 'intent://metamask.app.link#Intent;scheme=metamask;package=io.metamask;end';
-            //     window.location.href = metaMaskStoreUrl;
-            //     return;
-            // }
-
             let indexOf = userAgent.indexOf('Android');
             let is_mobile = false;
+
             if (indexOf !== -1) {
                 setIsMobile(true);
                 is_mobile = true;
@@ -124,12 +118,12 @@ const SwapPage = () => {
     useEffect(() => {
         if (connector && isMobile) {
             // Check if connection is already established
-            alert(connector.connected);
+            console.log(connector);
             if (!connector.connected) {
-                alert("!connector.connected");
+                console.log("!connector.connected");
                 // create new session
                 connector.createSession().then(() => {
-                    alert("connector.createSession");
+                    console.log("connector.createSession");
                     // get uri for QR Code modal
                     const uri = connector.uri;
                     // display QR Code modal
@@ -142,9 +136,9 @@ const SwapPage = () => {
       
             // Subscribe to connection events
             connector.on("connect", (error, payload) => {
-                alert("connector.on connect");
+                console.log("connector.on connect");
                 if (error) {
-                    alert(error);
+                    console.log(error);
                     throw error;
                 }
 
@@ -153,23 +147,27 @@ const SwapPage = () => {
 
                 // Get provided accounts and chainId
                 const { accounts, chainId } = payload.params[0];
-                alert(accounts);
-                alert(chainId);
+                console.log("accounts : ", accounts);
+                console.log("chainId : ", chainId);
             });
 
             connector.on("session_update", (error, payload) => {
-                alert("connector.on session_update");
+                console.log("connector.on session_update");
                 if (error) {
+                    console.log(error);
                     throw error;
                 }
 
                 // Get updated accounts and chainId
                 const { accounts, chainId } = payload.params[0];
+                console.log("accounts : ", accounts);
+                console.log("chainId : ", chainId);
             });
 
             connector.on("disconnect", (error, payload) => {
-                alert("connector.on disconnect");
+                console.log("connector.on disconnect");
                 if (error) {
+                    console.log(error)
                     throw error;
                 }
             });
