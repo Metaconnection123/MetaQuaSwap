@@ -160,7 +160,8 @@ const SwapPage = () => {
             console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
             console.log("inItWeb3#2")
-            await tmpProvider.enable();
+            console.log("tmpProvider : ", tmpProvider);
+            await tmpProvider.enable(); //walletConnect 다이얼로그가 생성됨
             console.log("inItWeb3#3")
             setProvider(tmpProvider);
             console.log("inItWeb3#4")
