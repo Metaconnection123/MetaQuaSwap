@@ -79,9 +79,7 @@ const SwapPage = () => {
         setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
         setContractAbi(require('../../abi/TestToken13.json'));
         initWeb3();
-        if (isMobile) {
-            // setConnector(new WalletConnect({ bridge: "https://bridge.walletconnect.org" }));
-        } else {
+        if (!isMobile) {
             if (window.ethereum) {
                 setMetaMaskDisabled(false);
                 covertGoerli();
@@ -93,7 +91,7 @@ const SwapPage = () => {
             } else {
                 setMetaMaskDisabled(true);
             }
-        }
+        } 
         return () => {
         }
     }, [])
@@ -159,10 +157,15 @@ const SwapPage = () => {
 
     const initWeb3 = async () => {
         if (isMobile) {
+            console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
+            console.log("inItWeb3#2")
             await tmpProvider.enable();
+            console.log("inItWeb3#3")
             setProvider(tmpProvider);
+            console.log("inItWeb3#4")
             const webThree = new Web3(tmpProvider);
+            console.log("inItWeb3#5")
             setWeb3(webThree);
         } else {
             const webThree = new Web3(window.ethereum);
