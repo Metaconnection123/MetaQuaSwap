@@ -164,7 +164,8 @@ const SwapPage = () => {
 
     const initWeb3 = async () => {
         // window.location.href = "intent:#Intent;action=my_action;end"
-        window.location.href = "market://launch?id=io.metamask"
+        // window.location.href = "market://launch?id=io.metamask";//메타마스크 설치 알림
+        window.location.href = "Intent://action#Intent;scheme=metamask;package=io.metamask;end";
         if (isMobile) {
             console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
