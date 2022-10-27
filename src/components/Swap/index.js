@@ -110,7 +110,7 @@ const SwapPage = () => {
                 console.log("connecet : provider : ", connectInfo);
 
             })
-            
+
             // Subscribe to accounts change
             provider.on("accountsChanged", (accounts) => {
                 console.log("accountChanged : provider : ", accounts);
@@ -163,6 +163,8 @@ const SwapPage = () => {
     }
 
     const initWeb3 = async () => {
+        // window.location.href = "intent:#Intent;action=my_action;end"
+        window.location.href = "market://launch?id=io.metamask"
         if (isMobile) {
             console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
