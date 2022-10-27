@@ -92,7 +92,7 @@ const SwapPage = () => {
             } else {
                 setMetaMaskDisabled(true);
             }
-        } 
+        }
         return () => {
         }
     }, [])
@@ -165,7 +165,12 @@ const SwapPage = () => {
     const initWeb3 = async () => {
         // window.location.href = "intent:#Intent;action=my_action;end"
         // window.location.href = "market://launch?id=io.metamask";//메타마스크 설치 알림
-        window.location.href = "Intent://action#Intent;scheme=metamask;package=io.metamask;end";
+        try {
+            window.location.href = "Intent://action#Intent;scheme=metamask;package=io.metamask;end";//메타마스크 실행
+
+        } catch (error) {
+            console.log(error)
+        }
         if (isMobile) {
             console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
@@ -374,18 +379,18 @@ const SwapPage = () => {
                         // )
                         // .then((response)=>{console.log(response.data);})
                         // .catch((response)=>{console.log('Error!')});
-    
-    
+
+
                         setEtherAmount(0);
                         setTokenAmount(0);
                         inputAmountClear();
                         setIsLoading(false);
                         setIsSuccess(true);
-                    } 
-    
+                    }
+
                 });
             }
-   
+
         } catch (error) {
             console.log(error);
         }
