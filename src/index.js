@@ -2,10 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
+import { Web3Modal } from '@web3modal/react'
+const config = {
+  projectId: 'f6b3b3cdad6af9ce4e840bae063879a1',
+  theme: "dark",
+  accentColor: "default",
+  ethereum: {
+    appName: 'eth_token_swap',
+    autoConnect: true
+  }
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-
-    <App />
+    <>
+        <App />
+        <Web3Modal config={config} />
+    </>
 
 );
