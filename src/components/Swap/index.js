@@ -73,6 +73,7 @@ const SwapPage = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [provider, setProvider] = useState();
 
+    const [userAgent, setUserAgent] = useState(window.navigator.userAgent);
 
 
     useEffect(() => {
@@ -105,6 +106,11 @@ const SwapPage = () => {
 
     useEffect(() => {
         if (provider) {
+            provider.on('connecet', (connectInfo) => {
+                console.log("connecet : provider : ", connectInfo);
+
+            })
+            
             // Subscribe to accounts change
             provider.on("accountsChanged", (accounts) => {
                 console.log("accountChanged : provider : ", accounts);
@@ -120,6 +126,7 @@ const SwapPage = () => {
             provider.on("disconnect", (code, reason) => {
                 console.log("accountChanged : disconnect : ", code, reason);
             });
+
         }
     }, [provider])
 
