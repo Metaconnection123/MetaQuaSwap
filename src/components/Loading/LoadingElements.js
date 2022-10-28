@@ -51,7 +51,7 @@ export const LoadingText = styled.div`
     left: 0;
     text-align: center;
     line-height: 150px;
-    font-size: 1em;
+    font-size: 1.5em;
     background: transparent;
     box-shadow: 0 0 5px rgba(0,0,0,.8);
     z-index: 100;
