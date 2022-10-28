@@ -455,6 +455,7 @@ const SwapPage = () => {
                 let receipt;
                 let result = await web3.eth.sendTransaction(trxParameters);
                 console.log("result : ", result);
+                
                 txHash = result.transactionHash;
                 while (true) {
                     await sleep(2000);
