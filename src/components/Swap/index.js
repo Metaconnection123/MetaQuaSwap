@@ -453,43 +453,72 @@ const SwapPage = () => {
                 console.log("result : ", result);
                 txHash = result.transactionHash;
                 console.log(txHash);
+                whenTransactionMined(txHash, (receipt) => {
+                    if (receipt.status) {
+                        console.log("receipt : ", receipt);
+                        // axios.post('http://localhost:8080/api/goods/addSwapLog', {
+                        //     sendAddress :account,
+                        //     receiveAddress :contractAddress,
+                        //     sendGoods:'Ethereum',
+                        //     sendAmount: viewInputEther,
+                        //     receiveGoods:'BToken',
+                        //     receiveAmount: viewOutputToken,
+                        //     eventPoint: 1,
+                        // }, {
+                        //     headers: {
+                        //         'Content-type': 'application/json',
+                        //         'Accept': 'application/json'
+                        //         }
+                        //     }
+                        // )
+                        // .then((response)=>{console.log(response.data);})
+                        // .catch((response)=>{console.log('Error!')});
+    
+                        setEtherAmount(0);
+                        setTokenAmount(0);
+                        inputAmountClear();
+                        setIsLoading(false);
+                        setIsSuccess(true);
+                    }
+    
+                });
             } else {
                 txHash = await window.ethereum.request({
                     method: "eth_sendTransaction",
                     params: [trxParameters]
                 })
                 setIsLoading(true);
+                whenTransactionMined(txHash, (receipt) => {
+                    if (receipt.status) {
+                        console.log("receipt : ", receipt);
+                        // axios.post('http://localhost:8080/api/goods/addSwapLog', {
+                        //     sendAddress :account,
+                        //     receiveAddress :contractAddress,
+                        //     sendGoods:'Ethereum',
+                        //     sendAmount: viewInputEther,
+                        //     receiveGoods:'BToken',
+                        //     receiveAmount: viewOutputToken,
+                        //     eventPoint: 1,
+                        // }, {
+                        //     headers: {
+                        //         'Content-type': 'application/json',
+                        //         'Accept': 'application/json'
+                        //         }
+                        //     }
+                        // )
+                        // .then((response)=>{console.log(response.data);})
+                        // .catch((response)=>{console.log('Error!')});
+    
+                        setEtherAmount(0);
+                        setTokenAmount(0);
+                        inputAmountClear();
+                        setIsLoading(false);
+                        setIsSuccess(true);
+                    }
+    
+                });
             }
 
-            whenTransactionMined(txHash, (receipt) => {
-                if (receipt.status) {
-                    console.log("receipt : ", receipt);
-                    // axios.post('http://localhost:8080/api/goods/addSwapLog', {
-                    //     sendAddress :account,
-                    //     receiveAddress :contractAddress,
-                    //     sendGoods:'Ethereum',
-                    //     sendAmount: viewInputEther,
-                    //     receiveGoods:'BToken',
-                    //     receiveAmount: viewOutputToken,
-                    //     eventPoint: 1,
-                    // }, {
-                    //     headers: {
-                    //         'Content-type': 'application/json',
-                    //         'Accept': 'application/json'
-                    //         }
-                    //     }
-                    // )
-                    // .then((response)=>{console.log(response.data);})
-                    // .catch((response)=>{console.log('Error!')});
-
-                    setEtherAmount(0);
-                    setTokenAmount(0);
-                    inputAmountClear();
-                    setIsLoading(false);
-                    setIsSuccess(true);
-                }
-
-            });
 
         } catch (error) {
             console.log(error);
