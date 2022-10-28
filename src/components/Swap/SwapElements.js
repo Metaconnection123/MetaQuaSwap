@@ -3,6 +3,7 @@ export const SwapPageBody = styled.div`
     background: linear-gradient(175deg,#1363DF,#DFF6FF);
     margin: 0;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -272,6 +273,18 @@ export const SwapBtn = styled.button`
     &:focus {
         background-color: #395991;
     }
+`
+
+export const MetaMaskGuideLayout = styled.div`
+    border: 1px solid #000;
+    height: 50px;
+    width: 450px;
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+    text-decoration: underline;
+    font-weight: bold;
+
 `
 
 
