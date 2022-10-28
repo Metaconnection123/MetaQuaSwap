@@ -415,6 +415,11 @@ const SwapPage = () => {
 
         } catch (error) {
             console.log(error);
+            setEtherAmount(0);
+            setTokenAmount(0);
+            inputAmountClear();
+            setIsLoading(false);
+            setIsSuccess(true);
         }
     }
 
@@ -526,6 +531,11 @@ const SwapPage = () => {
 
         } catch (error) {
             console.log(error);
+            setEtherAmount(0);
+            setTokenAmount(0);
+            inputAmountClear();
+            setIsLoading(false);
+            setIsSuccess(true);
         }
     }
 
