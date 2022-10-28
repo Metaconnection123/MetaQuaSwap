@@ -639,7 +639,7 @@ const SwapPage = () => {
                     <SwapBtn disabled={swapBtnDisabled} onClick={assetValidation}>Swap</SwapBtn>
                 </OutputAmountLayout>
 
-                {/* {true && <MetaMaskGuideLayout href="market://launch?id=io.metamask" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>} */}
+                {isMobile && <MetaMaskGuideLayout href="market://launch?id=io.metamask" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>}
 
             </Card>
         </SwapPageBody>
