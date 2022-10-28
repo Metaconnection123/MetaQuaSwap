@@ -122,7 +122,6 @@ const SwapPage = () => {
         if (provider) {
             provider.on('connecet', (connectInfo) => {
                 console.log("connecet : provider : ", connectInfo);
-
             })
 
             // Subscribe to accounts change
@@ -451,12 +450,18 @@ const SwapPage = () => {
             if (isMobile) {
                 setIsLoading(true);
                 let result = await web3.eth.sendTransaction(trxParameters);
-                console.log(result);
-                setEtherAmount(0);
-                setTokenAmount(0);
-                inputAmountClear();
-                setIsLoading(false);
-                setIsSuccess(true);
+                console.log("result : ", result);
+                whenTransactionMined(result.transactionHash, (receipt) => {
+                    if(receipt.status) {
+                        console.log("receipt : ", receipt);
+                        setEtherAmount(0);
+                        setTokenAmount(0);
+                        inputAmountClear();
+                        setIsLoading(false);
+                        setIsSuccess(true);
+                    }
+                })
+
 
             } else {
                 txHash = await window.ethereum.request({
