@@ -354,8 +354,21 @@ const SwapPage = () => {
 
             if (isMobile) {
                 setIsLoading(true);
+                let receipt;
                 let result = await web3.eth.sendTransaction(trxParameters);
-                console.log(result);
+                console.log("result#1 : ", result);
+
+                txHash = result.transactionHash;
+                while (receipt == null) {
+                    receipt = await web3.eth.getTransactionReceipt(txHash);
+                    await sleep(3000);
+                    console.log(receipt);
+                    console.log("receipt : ", receipt);
+                    if (receipt.status) {
+                        break;
+                    }
+                }
+
                 setEtherAmount(0);
                 setTokenAmount(0);
                 inputAmountClear();
