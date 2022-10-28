@@ -452,6 +452,7 @@ const SwapPage = () => {
                 let result = await web3.eth.sendTransaction(trxParameters);
                 console.log("result : ", result);
                 txHash = result.transactionHash;
+                console.log(txHash);
             } else {
                 txHash = await window.ethereum.request({
                     method: "eth_sendTransaction",
