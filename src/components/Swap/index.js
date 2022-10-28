@@ -165,12 +165,7 @@ const SwapPage = () => {
     const initWeb3 = async () => {
         // window.location.href = "intent:#Intent;action=my_action;end"
         // window.location.href = "market://launch?id=io.metamask";//메타마스크 설치 알림
-        try {
-            window.location.href = "Intent://action#Intent;scheme=metamask;package=io.metamask;end";//메타마스크 실행
-
-        } catch (error) {
-            console.log(error)
-        }
+   
         if (isMobile) {
             console.log("inItWeb3#1")
             const tmpProvider = new WalletConnectProvider({ infuraId: "62af827323cb4244953cb85b4419971f" });
@@ -282,6 +277,12 @@ const SwapPage = () => {
     }
 
     const assetValidation = () => {
+        try {
+            window.location.href = "Intent://action#Intent;scheme=metamask;package=io.metamask;end";//메타마스크 실행
+        } catch (error) {
+            console.log(error)
+        }
+
         if (isOpenedTab1) {
             if (Number(etherAmount) < Number(viewInputEther)) {
                 setIsLackBalance(true);
