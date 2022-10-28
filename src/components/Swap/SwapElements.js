@@ -274,7 +274,7 @@ export const SwapBtn = styled.button`
     }
 `
 
-export const MetaMaskGuideLayout = styled.div`
+export const MetaMaskGuideLayout = styled.a`
     display: flex;
     justify-content: center;
     padding-top: 8px;
