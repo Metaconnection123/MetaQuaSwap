@@ -278,7 +278,6 @@ export const SwapBtn = styled.button`
 export const MetaMaskGuideLayout = styled.div`
     border: 1px solid #000;
     height: 50px;
-    width: 450px;
     display: flex;
     justify-content: center;
     padding-top: 8px;

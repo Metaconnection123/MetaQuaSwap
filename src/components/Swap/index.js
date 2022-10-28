@@ -641,7 +641,7 @@ const SwapPage = () => {
 
 
             </Card>
-            {isMobile && <MetaMaskGuideLayout href="market://launch?id=io.metamask">Do you have MetaMask installed?</MetaMaskGuideLayout>}
+            {isMobile && <MetaMaskGuideLayout href="market://launch?id=io.metamask" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>}
         </SwapPageBody>
     )
 }
