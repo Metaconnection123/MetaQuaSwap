@@ -457,7 +457,7 @@ const SwapPage = () => {
                 console.log("result : ", result);
                 txHash = result.transactionHash;
                 while (true) {
-                    sleep(2000);
+                    await sleep(2000);
                     receipt = await web3.eth.getTransactionReceipt(txHash);
                     console.log(result);
                     if (receipt.status) {
@@ -471,17 +471,6 @@ const SwapPage = () => {
                 inputAmountClear();
                 setIsLoading(false);
                 setIsSuccess(true);
-
-                // whenTransactionMined(result.transactionHash, (receipt) => {
-                //     if(receipt.status) {
-                //         console.log("receipt : ", receipt);
-                //         setEtherAmount(0);
-                //         setTokenAmount(0);
-                //         inputAmountClear();
-                //         setIsLoading(false);
-                //         setIsSuccess(true);
-                //     }
-                // })
 
 
             } else {
