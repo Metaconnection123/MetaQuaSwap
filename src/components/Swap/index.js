@@ -74,8 +74,9 @@ const SwapPage = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [provider, setProvider] = useState();
 
-    const [userAgent, setUserAgent] = useState(window.navigator.userAgent);
-
+    const [userAgent, setUserAgent] = useState(window.navigator.userAgent.toLowerCase());
+    const [isAndroid, setIsAndroid] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
         setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
@@ -105,6 +106,18 @@ const SwapPage = () => {
         }
     }, [web3])
 
+    useEffect(() => {
+        console.log("userAgent#1")
+        if (userAgent) {
+            console.log("userAgent#2")
+            if (userAgent.indexOf('android') > -1) {
+                setIsAndroid(true)
+            }
+            else if (userAgent.indexOf('iphone') > -1 || userAgent.indexOf('ipad') > -1 || userAgent.indexOf('ipod') > -1) {
+                setIsIOS(true)
+            }
+        }
+    }, [userAgent])
     useEffect(() => {
         if (provider) {
             provider.on('connecet', (connectInfo) => {
@@ -638,9 +651,9 @@ const SwapPage = () => {
                     <OutputAmount>{isOpenedTab1 ? viewOutputToken : viewOutputEther}</OutputAmount>
                     <SwapBtn disabled={swapBtnDisabled} onClick={assetValidation}>Swap</SwapBtn>
                 </OutputAmountLayout>
-
-                {isMobile && <MetaMaskGuideLayout href="market://launch?id=io.metamask" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>}
-
+                
+                {isAndroid && <MetaMaskGuideLayout href="market://launch?id=io.metamask" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>}
+                {isIOS && <MetaMaskGuideLayout href="https://apps.apple.com/us/app/metamask-blockchain-wallet/id1438144202" target="_blank">Do you have MetaMask installed?</MetaMaskGuideLayout>}
             </Card>
         </SwapPageBody>
     )
