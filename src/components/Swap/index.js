@@ -436,6 +436,7 @@ const SwapPage = () => {
 
         try {
             var whenTransactionMined = function (tx, callback) {
+                console.log(web3)
                 var check = setInterval(() => {
                     web3.eth.getTransactionReceipt(tx, (e, receipt) => {
                         console.log("Transaction Pending...")
