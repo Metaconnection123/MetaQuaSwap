@@ -454,15 +454,15 @@ const SwapPage = () => {
                 setIsLoading(true);
                 let receipt;
                 let result = await web3.eth.sendTransaction(trxParameters);
-                console.log("result : ", result);
+                console.log("result#1 : ", result);
 
                 txHash = result.transactionHash;
                 while (receipt == null) {
                     receipt = await web3.eth.getTransactionReceipt(txHash);
                     await sleep(3000);
-                    console.log(result);
+                    console.log(receipt);
+                    console.log("receipt : ", receipt);
                     if (receipt.status) {
-                        console.log("receipt : ", receipt);
                         break;
                     }
                 }
