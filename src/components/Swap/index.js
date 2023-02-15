@@ -79,8 +79,10 @@ const SwapPage = () => {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
-        setContractAbi(require('../../abi/TestToken13.json'));
+        // setContractAddress('0xAFf00Ebc8c08B88C8e025331Bd8af281995D5308');
+        // setContractAbi(require('../../abi/TestToken13.json'));
+        setContractAddress('0x18b3c8cef9433297d769afdf19c239c128d2bbee');
+        setContractAbi(require('../../abi/TestToken17.json'))
         initWeb3();
         if (!isMobile) {
             if (window.ethereum) {
